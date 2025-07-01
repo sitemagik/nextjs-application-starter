@@ -1,0 +1,473 @@
+{% extends "layout.html" %}
+
+{% block title %}Manage Orders - BDSM Candles{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-speedometer2" viewBox="0 0 16 16">
+                                <path d="M8 4a.5.5 0 0 1 .5.5V6a.5.5 0 0 1-1 0V4.5A.5.5 0 0 1 8 4zM3.732 5.732a.5.5 0 0 1 .707 0l.915.914a.5.5 0 1 1-.708.708l-.914-.915a.5.5 0 0 1 0-.707zM2 10a.5.5 0 0 1 .5-.5h1.586a.5.5 0 0 1 0 1H2.5A.5.5 0 0 1 2 10zm9.5 0a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 0 1H12a.5.5 0 0 1-.5-.5zm.754-4.246a.389.389 0 0 0-.527-.02L7.547 9.31a.91.91 0 1 0 1.302 1.258l3.434-4.297a.389.389 0 0 0-.029-.518z"/>
+                                <path fill-rule="evenodd" d="M0 10a8 8 0 1 1 15.547 2.661c-.442 1.253-1.845 1.602-2.932 1.25C11.309 13.488 9.475 13 8 13c-1.474 0-3.31.488-4.615.911-1.087.352-2.49.003-2.932-1.25A7.988 7.988 0 0 1 0 10zm8-7a7 7 0 0 0-6.603 9.329c.203.575.923.876 1.68.63C4.397 12.533 6.358 12 8 12s3.604.532 4.923.96c.757.245 1.477-.056 1.68-.631A7 7 0 0 0 8 3z"/>
+                            </svg>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('admin.orders') }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bag" viewBox="0 0 16 16">
+                                <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z"/>
+                            </svg>
+                            Orders
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin.dashboard') }}#productsSection">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box" viewBox="0 0 16 16">
+                                <path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5 8 5.961 14.154 3.5 8.186 1.113zM15 4.239l-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923l6.5 2.6zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464L7.443.184z"/>
+                            </svg>
+                            Products
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <!-- Orders Header -->
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1>Orders</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <button type="button" class="btn btn-outline-secondary" id="exportCSV">Export CSV</button>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown">
+                            Filter by Status
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" data-status="all">All Orders</a></li>
+                            <li><a class="dropdown-item" href="#" data-status="pending">Pending</a></li>
+                            <li><a class="dropdown-item" href="#" data-status="processing">Processing</a></li>
+                            <li><a class="dropdown-item" href="#" data-status="shipped">Shipped</a></li>
+                            <li><a class="dropdown-item" href="#" data-status="completed">Completed</a></li>
+                            <li><a class="dropdown-item" href="#" data-status="cancelled">Cancelled</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search and Filters -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" id="searchOrders" placeholder="Search orders...">
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="sortOrders">
+                        <option value="date-desc">Date: Newest First</option>
+                        <option value="date-asc">Date: Oldest First</option>
+                        <option value="total-desc">Total: High to Low</option>
+                        <option value="total-asc">Total: Low to High</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="itemsPerPage">
+                        <option value="10">10 per page</option>
+                        <option value="25">25 per page</option>
+                        <option value="50">50 per page</option>
+                        <option value="100">100 per page</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Orders Table -->
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="ordersTable">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Date</th>
+                                    <th>Customer</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in orders %}
+                                <tr data-status="{{ order.status }}">
+                                    <td>#{{ order._id }}</td>
+                                    <td>{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>
+                                        {{ order.shipping_address.name }}<br>
+                                        <small class="text-muted">{{ order.shipping_address.email }}</small>
+                                    </td>
+                                    <td>
+                                        {{ order.items|length }} item(s)<br>
+                                        <small class="text-muted">
+                                            {% for item in order.items[:2] %}
+                                                {{ item.name }}{% if not loop.last %}, {% endif %}
+                                            {% endfor %}
+                                            {% if order.items|length > 2 %}...{% endif %}
+                                        </small>
+                                    </td>
+                                    <td>{{ order.total|currency }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ order.status|status_color }}">
+                                            {{ order.status|title }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-outline-primary"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#orderModal{{ order._id }}">
+                                                View
+                                            </button>
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                                                    data-bs-toggle="dropdown">
+                                                Update
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <form action="{{ url_for('admin.update_order_status', order_id=order._id) }}" method="POST">
+                                                        <input type="hidden" name="status" value="processing">
+                                                        <button type="submit" class="dropdown-item">Mark Processing</button>
+                                                    </form>
+                                                </li>
+                                                <li>
+                                                    <form action="{{ url_for('admin.update_order_status', order_id=order._id) }}" method="POST">
+                                                        <input type="hidden" name="status" value="shipped">
+                                                        <button type="submit" class="dropdown-item">Mark Shipped</button>
+                                                    </form>
+                                                </li>
+                                                <li>
+                                                    <form action="{{ url_for('admin.update_order_status', order_id=order._id) }}" method="POST">
+                                                        <input type="hidden" name="status" value="completed">
+                                                        <button type="submit" class="dropdown-item">Mark Completed</button>
+                                                    </form>
+                                                </li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <form action="{{ url_for('admin.update_order_status', order_id=order._id) }}" method="POST">
+                                                        <input type="hidden" name="status" value="cancelled">
+                                                        <button type="submit" class="dropdown-item text-danger">Cancel Order</button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <nav aria-label="Orders pagination" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">Previous</a>
+                            </li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Order Detail Modals -->
+{% for order in orders %}
+<div class="modal fade" id="orderModal{{ order._id }}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Order #{{ order._id }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-4">
+                    <!-- Customer Information -->
+                    <div class="col-md-6">
+                        <h6>Customer Information</h6>
+                        <p>
+                            <strong>Name:</strong> {{ order.shipping_address.name }}<br>
+                            <strong>Email:</strong> {{ order.shipping_address.email }}<br>
+                            <strong>Phone:</strong> {{ order.shipping_address.phone }}
+                        </p>
+                    </div>
+                    
+                    <!-- Shipping Address -->
+                    <div class="col-md-6">
+                        <h6>Shipping Address</h6>
+                        <p>
+                            {{ order.shipping_address.address }}<br>
+                            {{ order.shipping_address.city }}, {{ order.shipping_address.state }} {{ order.shipping_address.zip }}<br>
+                            {{ order.shipping_address.country }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Order Details -->
+                <div class="table-responsive mb-4">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items %}
+                            <tr>
+                                <td>
+                                    {{ item.name }}
+                                    {% if item.options %}
+                                    <br>
+                                    <small class="text-muted">
+                                        {% for key, value in item.options.items() %}
+                                            {{ key }}: {{ value }}{% if not loop.last %}, {% endif %}
+                                        {% endfor %}
+                                    </small>
+                                    {% endif %}
+                                </td>
+                                <td>{{ item.price|currency }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td class="text-end">{{ (item.price * item.quantity)|currency }}</td>
+                            </tr>
+                            {% endfor %}
+                            <tr>
+                                <td colspan="3" class="text-end"><strong>Subtotal</strong></td>
+                                <td class="text-end">{{ order.subtotal|currency }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-end"><strong>Shipping</strong></td>
+                                <td class="text-end">{{ order.shipping|currency }}</td>
+                            </tr>
+                            {% if order.discount %}
+                            <tr>
+                                <td colspan="3" class="text-end"><strong>Discount</strong></td>
+                                <td class="text-end">-{{ order.discount|currency }}</td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                <td colspan="3" class="text-end"><strong>Total</strong></td>
+                                <td class="text-end"><strong>{{ order.total|currency }}</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Order Timeline -->
+                <h6>Order Timeline</h6>
+                <div class="timeline mb-4">
+                    {% for event in order.timeline %}
+                    <div class="timeline-item">
+                        <div class="timeline-date">{{ event.timestamp.strftime('%Y-%m-%d %H:%M') }}</div>
+                        <div class="timeline-content">
+                            <strong>{{ event.status|title }}</strong><br>
+                            {% if event.note %}
+                            <small class="text-muted">{{ event.note }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Add Note Form -->
+                <form action="{{ url_for('admin.add_order_note', order_id=order._id) }}" method="POST" class="mb-3">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="note" placeholder="Add a note to this order...">
+                        <button class="btn btn-outline-primary" type="submit">Add Note</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <div class="dropdown d-inline-block">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        Update Status
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <form action="{{ url_for('admin.update_order_status', order_id=order._id) }}" method="POST">
+                                <input type="hidden" name="status" value="processing">
+                                <button type="submit" class="dropdown-item">Mark Processing</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="{{ url_for('admin.update_order_status', order_id=order._id) }}" method="POST">
+                                <input type="hidden" name="status" value="shipped">
+                                <button type="submit" class="dropdown-item">Mark Shipped</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="{{ url_for('admin.update_order_status', order_id=order._id) }}" method="POST">
+                                <input type="hidden" name="status" value="completed">
+                                <button type="submit" class="dropdown-item">Mark Completed</button>
+                            </form>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form action="{{ url_for('admin.update_order_status', order_id=order._id) }}" method="POST">
+                                <input type="hidden" name="status" value="cancelled">
+                                <button type="submit" class="dropdown-item text-danger">Cancel Order</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 100;
+        padding: 48px 0 0;
+        box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+    }
+
+    .sidebar .nav-link {
+        font-weight: 500;
+        color: #333;
+    }
+
+    .sidebar .nav-link.active {
+        color: #1a1a1a;
+    }
+
+    .timeline {
+        position: relative;
+        padding: 20px 0;
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-left: 40px;
+        margin-bottom: 20px;
+    }
+
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: -20px;
+        width: 2px;
+        background-color: #e9ecef;
+    }
+
+    .timeline-item::after {
+        content: '';
+        position: absolute;
+        left: -4px;
+        top: 8px;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: #1a1a1a;
+    }
+
+    .timeline-date {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-bottom: 4px;
+    }
+
+    .timeline-content {
+        background-color: #f8f9fa;
+        padding: 10px;
+        border-radius: 4px;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Search functionality
+    const searchInput = document.getElementById('searchOrders');
+    const ordersTable = document.getElementById('ordersTable');
+    const rows = ordersTable.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+    searchInput.addEventListener('input', function(e) {
+        const term = e.target.value.toLowerCase();
+        
+        Array.from(rows).forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(term) ? '' : 'none';
+        });
+    });
+
+    // Status filter
+    document.querySelectorAll('[data-status]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const status = this.dataset.status;
+            
+            Array.from(rows).forEach(row => {
+                if (status === 'all' || row.dataset.status === status) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    // Export to CSV
+    document.getElementById('exportCSV').addEventListener('click', function() {
+        let csv = [];
+        const headers = Array.from(ordersTable.querySelectorAll('thead th'))
+            .map(th => th.textContent);
+        csv.push(headers.join(','));
+
+        Array.from(rows).forEach(row => {
+            if (row.style.display !== 'none') {
+                const cells = Array.from(row.getElementsByTagName('td'))
+                    .map(td => `"${td.textContent.trim().replace(/"/g, '""')}"`);
+                csv.push(cells.join(','));
+            }
+        });
+
+        const blob = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'orders.csv');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+});
+</script>
+{% endblock %}
