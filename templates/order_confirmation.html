@@ -1,0 +1,146 @@
+{% extends "layout.html" %}
+
+{% block title %}Order Confirmation - BDSM Candles{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-5 text-center">
+                    <div class="mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-check-circle text-success" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                            <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+                        </svg>
+                    </div>
+                    
+                    <h1 class="mb-4">Thank You for Your Order!</h1>
+                    <p class="lead text-muted mb-5">
+                        Your order has been successfully placed and is being processed.
+                    </p>
+
+                    {% if order %}
+                    <div class="text-start mb-5">
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h5>Order Details</h5>
+                                <p class="mb-0">
+                                    Order Number: #{{ order._id }}<br>
+                                    Date: {{ order.created_at.strftime('%B %d, %Y') }}<br>
+                                    Total: {{ order.total|currency }}
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Shipping Address</h5>
+                                <p class="mb-0">
+                                    {{ order.shipping_address.name }}<br>
+                                    {{ order.shipping_address.address }}<br>
+                                    {{ order.shipping_address.city }}, {{ order.shipping_address.state }} {{ order.shipping_address.zip }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">Order Summary</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-borderless">
+                                        <tbody>
+                                            {% for item in order.items %}
+                                            <tr>
+                                                <td class="w-50">
+                                                    <div class="d-flex align-items-center">
+                                                        <img src="{{ item.image_url }}" 
+                                                             alt="{{ item.name }}"
+                                                             class="rounded me-3"
+                                                             style="width: 64px; height: 64px; object-fit: cover;">
+                                                        <div>
+                                                            <h6 class="mb-0">{{ item.name }}</h6>
+                                                            <small class="text-muted">Quantity: {{ item.quantity }}</small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="text-end">{{ (item.price * item.quantity)|currency }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                            <tr>
+                                                <td class="text-end"><strong>Subtotal</strong></td>
+                                                <td class="text-end">{{ order.subtotal|currency }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-end"><strong>Shipping</strong></td>
+                                                <td class="text-end">{{ order.shipping|currency }}</td>
+                                            </tr>
+                                            {% if order.discount %}
+                                            <tr>
+                                                <td class="text-end"><strong>Discount</strong></td>
+                                                <td class="text-end text-success">-{{ order.discount|currency }}</td>
+                                            </tr>
+                                            {% endif %}
+                                            <tr>
+                                                <td class="text-end"><strong>Total</strong></td>
+                                                <td class="text-end"><strong>{{ order.total|currency }}</strong></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="text-center mb-4">
+                        <h5>What's Next?</h5>
+                        <p class="text-muted">
+                            You will receive an order confirmation email shortly with your order details.<br>
+                            We will notify you when your order has been shipped.
+                        </p>
+                    </div>
+
+                    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                        {% if session.get('user_id') %}
+                            <a href="{{ url_for('auth.profile') }}" class="btn btn-primary px-4 me-sm-3">View Order History</a>
+                        {% endif %}
+                        <a href="{{ url_for('products') }}" class="btn btn-outline-primary px-4">Continue Shopping</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer Support -->
+            <div class="text-center mt-4">
+                <p class="mb-2">Need help with your order?</p>
+                <p class="text-muted">
+                    Contact our customer support:<br>
+                    Email: support@bdsmcandles.com<br>
+                    Phone: (555) 123-4567
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        border: none;
+    }
+    
+    .table > :not(caption) > * > * {
+        padding: 1rem;
+    }
+    
+    .btn-outline-primary {
+        color: #1a1a1a;
+        border-color: #1a1a1a;
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: #1a1a1a;
+        border-color: #1a1a1a;
+    }
+</style>
+{% endblock %}
