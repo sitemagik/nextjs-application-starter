@@ -1,0 +1,121 @@
+{% extends "layout.html" %}
+
+{% block title %}BDSM Candles - Luxury Candles{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <h1 class="display-4 mb-4">Illuminate Your Desires</h1>
+        <p class="lead mb-4">Handcrafted luxury candles for your intimate moments</p>
+        <a href="{{ url_for('products') }}" class="btn btn-light btn-lg">Shop Now</a>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="container my-5">
+    <h2 class="text-center mb-4">Featured Collections</h2>
+    <div class="row g-4">
+        {% for product in featured_products %}
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}" 
+                     style="height: 300px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text text-muted">{{ product.description[:100] }}...</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="h5 mb-0">{{ product.price|currency }}</span>
+                        <a href="{{ url_for('product_detail', product_id=product.id) }}" 
+                           class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="bg-light py-5">
+    <div class="container">
+        <div class="row text-center g-4">
+            <div class="col-md-4">
+                <div class="p-4">
+                    <h3>Handcrafted</h3>
+                    <p>Each candle is carefully handcrafted with premium materials</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4">
+                    <h3>Premium Quality</h3>
+                    <p>Made with high-quality wax and natural fragrances</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4">
+                    <h3>Unique Design</h3>
+                    <p>Distinctive designs that complement your aesthetic</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter Section -->
+<section class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h3>Stay Updated</h3>
+            <p class="text-muted">Subscribe to our newsletter for exclusive offers and updates</p>
+            <form class="row g-3 justify-content-center">
+                <div class="col-md-8">
+                    <input type="email" class="form-control" placeholder="Enter your email">
+                </div>
+                <div class="col-md-auto">
+                    <button type="submit" class="btn btn-primary">Subscribe</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section class="container my-5">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <h2>About Our Candles</h2>
+            <p class="lead">We craft premium candles that enhance your intimate moments</p>
+            <p>Our candles are made with the finest materials and attention to detail. Each piece is carefully crafted to provide the perfect ambiance for your special moments.</p>
+            <a href="{{ url_for('products') }}" class="btn btn-primary">Explore Collection</a>
+        </div>
+        <div class="col-md-6">
+            <img src="https://images.pexels.com/photos/3270223/pexels-photo-3270223.jpeg" 
+                 class="img-fluid rounded shadow" alt="Luxury Candles">
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                    url('https://images.pexels.com/photos/278664/pexels-photo-278664.jpeg');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        text-align: center;
+        padding: 120px 0;
+    }
+    
+    .card {
+        border: none;
+        transition: transform 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+{% endblock %}
