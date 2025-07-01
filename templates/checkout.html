@@ -1,0 +1,251 @@
+{% extends "layout.html" %}
+
+{% block title %}Checkout - BDSM Candles{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">Checkout</h1>
+
+    <div class="row">
+        <!-- Checkout Form -->
+        <div class="col-lg-8">
+            <form action="{{ url_for('checkout') }}" method="POST">
+                <!-- Shipping Information -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Shipping Information</h5>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="firstName" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="firstName" name="firstName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="lastName" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="lastName" name="lastName" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" 
+                                       value="{{ session.get('email', '') }}" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="address" class="form-label">Street Address</label>
+                                <input type="text" class="form-control" id="address" name="address" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="city" class="form-label">City</label>
+                                <input type="text" class="form-control" id="city" name="city" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="state" class="form-label">State</label>
+                                <select class="form-select" id="state" name="state" required>
+                                    <option value="">Choose...</option>
+                                    <option value="AL">Alabama</option>
+                                    <option value="AK">Alaska</option>
+                                    <!-- Add other states -->
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="zip" class="form-label">ZIP Code</label>
+                                <input type="text" class="form-control" id="zip" name="zip" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Information -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Payment Information</h5>
+                        
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="cardName" class="form-label">Name on Card</label>
+                                <input type="text" class="form-control" id="cardName" name="cardName" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="cardNumber" class="form-label">Card Number</label>
+                                <input type="text" class="form-control" id="cardNumber" name="cardNumber" 
+                                       pattern="\d{16}" placeholder="1234 5678 9012 3456" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="expMonth" class="form-label">Expiration Month</label>
+                                <select class="form-select" id="expMonth" name="expMonth" required>
+                                    <option value="">Month</option>
+                                    {% for i in range(1, 13) %}
+                                    <option value="{{ '%02d' % i }}">{{ '%02d' % i }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="expYear" class="form-label">Expiration Year</label>
+                                <select class="form-select" id="expYear" name="expYear" required>
+                                    <option value="">Year</option>
+                                    {% for i in range(2024, 2035) %}
+                                    <option value="{{ i }}">{{ i }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="cvv" class="form-label">CVV</label>
+                                <input type="text" class="form-control" id="cvv" name="cvv" 
+                                       pattern="\d{3,4}" placeholder="123" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review Items -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Review Items</h5>
+                        
+                        {% for item in cart_items %}
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center">
+                                <img src="{{ item.product.image_url }}" 
+                                     alt="{{ item.product.name }}" 
+                                     class="rounded me-3"
+                                     style="width: 64px; height: 64px; object-fit: cover;">
+                                <div>
+                                    <h6 class="mb-0">{{ item.product.name }}</h6>
+                                    <small class="text-muted">Quantity: {{ item.quantity }}</small>
+                                </div>
+                            </div>
+                            <span>{{ item.total|currency }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Terms and Conditions -->
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
+                    <label class="form-check-label" for="terms">
+                        I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">terms and conditions</a>
+                    </label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary btn-lg w-100">
+                    Place Order
+                </button>
+            </form>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="col-lg-4 mt-4 mt-lg-0">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Order Summary</h5>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal</span>
+                        <span>{{ total|currency }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Shipping</span>
+                        <span>{% if total >= 50 %}Free{% else %}$5.00{% endif %}</span>
+                    </div>
+                    {% if session.get('promo_code') %}
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Discount</span>
+                        <span class="text-success">-${{ discount|currency }}</span>
+                    </div>
+                    {% endif %}
+                    <hr>
+                    <div class="d-flex justify-content-between mb-4">
+                        <strong>Total</strong>
+                        <strong>{{ (total if total >= 50 else total + 5)|currency }}</strong>
+                    </div>
+
+                    <!-- Security Notice -->
+                    <div class="alert alert-light mb-0">
+                        <small>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-shield-lock" viewBox="0 0 16 16">
+                                <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                            </svg>
+                            Secure Checkout
+                            <br>
+                            Your payment information is encrypted and secure.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Terms and Conditions Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Terms and Conditions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <h6>1. General Terms</h6>
+                <p>By placing an order, you agree to these terms and conditions.</p>
+                
+                <h6>2. Privacy Policy</h6>
+                <p>Your personal information will be handled according to our privacy policy.</p>
+                
+                <h6>3. Shipping</h6>
+                <p>Orders typically ship within 1-2 business days. Free shipping on orders over $50.</p>
+                
+                <h6>4. Returns</h6>
+                <p>30-day return policy for unused items in original packaging.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-control:focus, .form-select:focus {
+        border-color: #1a1a1a;
+        box-shadow: 0 0 0 0.25rem rgba(26, 26, 26, 0.25);
+    }
+    
+    .form-check-input:checked {
+        background-color: #1a1a1a;
+        border-color: #1a1a1a;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Format credit card number with spaces
+    const cardNumber = document.getElementById('cardNumber');
+    if (cardNumber) {
+        cardNumber.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            let formattedValue = '';
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 4 === 0) {
+                    formattedValue += ' ';
+                }
+                formattedValue += value[i];
+            }
+            e.target.value = formattedValue;
+        });
+    }
+
+    // Validate ZIP code
+    const zipCode = document.getElementById('zip');
+    if (zipCode) {
+        zipCode.addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '').substring(0, 5);
+        });
+    }
+});
+</script>
+{% endblock %}
